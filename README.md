@@ -1,6 +1,6 @@
 # PRONOVIAS #
 
-##Installation
+#Installation
 
 * Clone repository
 ```
@@ -33,7 +33,7 @@ bin/magento setup:install --base-url=http://local.pronovias.com --db-host=mysql 
 
 *_____________________*
 
-##Conditions
+#Conditions
 
 Conventional DB values:
 * Name: external_db

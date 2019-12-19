@@ -1,0 +1,84 @@
+version: '2'
+
+services:
+  nginx:
+    image: nginx:latest
+    env_file: .env
+    ports:
+    ## BEGIN webserver_ports ##
+      - "${HTTP_BINDED_PORT}:80"
+      - "${HTTPS_BINDED_PORT}:443"
+    ## END webserver_ports ##
+    tty: true
+    volumes:
+      - ./docker/config/nginx/nginx.conf:/etc/nginx/nginx.conf
+      #- ./docker/config/nginx/ssl:/etc/nginx/ssl
+      #- ./docker/config/nginx/auth:/etc/nginx/auth
+      - ./docker/config/nginx/sites-enabled/default.conf:/etc/nginx/sites-enabled/default.conf
+      - ./docker/volumes/nginx/logs:/var/log/nginx
+    environment:
+      VIRTUAL_HOST: ${VIRTUAL_HOST}
+    volumes_from:
+      - appdata:ro
+    depends_on:
+      - php
+    networks:
+    ## BEGIN webserver_network_ip ##
+      - back
+    ## END webserver_network_ip ##
+
+
+  php:
+    image: summasolutions/php:7.1-fpm
+    volumes:
+      - ./docker/config/php/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/config/php/php-fpm.conf:/usr/local/etc/php-fpm.conf
+      - ./docker/config/php/ext-xdebug.ini:/usr/local/etc/php/conf.d/ext-xdebug.ini
+      - ./docker/volumes/php-fpm/logs:/var/log/php-fpm
+      - ./docker/config/crontab/cronfile:/etc/cron.d/cronfile
+    volumes_from:
+      - appdata
+    env_file: .env
+    environment:
+        XDEBUG_CONFIG: ${XDEBUG_CONFIG}
+        PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
+    depends_on:
+      - appdata
+    user: www-data
+    networks:
+      - back
+
+  appdata:
+    image: alpine:latest
+    volumes:
+      - ./docker/config/appdata/startup.sh:/startup.sh
+      - ./docker/config/bash/.bashrc:/var/www/.bashrc
+      - ./docker/config/bash/.bashrc:/root/.bashrc
+      - .:/var/www/html
+    command: /bin/sh /startup.sh
+
+  mysql:
+    image: mysql:${MYSQL_VERSION}
+    env_file: .env
+    ports:
+      - "${DATABASE_BINDED_PORT}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DATABASE_NAME}
+      MYSQL_USER: ${DATABASE_USER}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - "./docker/volumes/mysql:/var/lib/mysql"
+      - "./docker/config/mysql/my.cnf:/etc/mysql/my.cnf"
+      - "./docker/dumps:/dumps"
+      - "${MYSQL_CONFIG_FILE}:/etc/mysql/conf.d"
+    networks:
+      - back
+
+networks:
+  back:
+    driver: bridge
+
+#volumes:
+#  app-volume-sync:
+#    external: true

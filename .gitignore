@@ -66,8 +66,8 @@ atlassian*
 
 
 !/docker
-/.env
-/docker-compose.yml
+!/.env
+!/docker-compose.yml
 !/docker-compose-mac.yml
 !/docker-sync.yml
 !/.env.sample
@@ -75,7 +75,7 @@ atlassian*
 /.docker-sync
 /docker/volumes
 /docker/dumps
-/docker/config/php/ext-xdebug.ini
+!/docker/config/php/ext-xdebug.ini
 
 /pub/media/magestore/
 pub/media/ves_vendors/
