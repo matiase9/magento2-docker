@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Mramirez_Migrator::services" title="Mramirez Services" module="Mramirez_Migrator" sortOrder="51" resource="Mramirez_Migrator::services"/>
+        <add id="Mramirez_Migrator::employees" title="Employees" module="Mramirez_Migrator" sortOrder="10" action="mramirez_migrator/employees" resource="Mramirez_Migrator::employees" parent="Mramirez_Migrator::services"/>
+    </menu>
+</config>
